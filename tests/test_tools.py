@@ -1,12 +1,11 @@
 """
-Tests for the Tool classes and tool transformers.
+Tests for the Tool classes.
 """
 
 import pytest
 from pydantic import BaseModel
 
-from fast_agents import Tool, ToolResponse, ToolTransformer, ToolValidator
-from fast_agents import IdToObjectIdTransformer, JsonExtractorTransformer
+from fast_agents import Tool, ToolResponse
 from bson import ObjectId
 
 
@@ -73,60 +72,7 @@ class TestTool:
         assert response.is_error is True
         assert "[Error]" in response.output_str
 
-
-class TestToolTransformers:
-    """Test cases for tool transformers."""
-
-    @pytest.mark.asyncio
-    async def test_id_to_object_id_transformer(self):
-        """Test ObjectId transformation."""
-        
-        transformer = IdToObjectIdTransformer(["user_id"])
-        
-        # Test valid ObjectId string
-        valid_id = str(ObjectId())
-        result = await transformer.transform(user_id=valid_id)
-        
-        assert isinstance(result["user_id"], ObjectId)
-        assert str(result["user_id"]) == valid_id
-
-    @pytest.mark.asyncio 
-    async def test_id_to_object_id_transformer_invalid(self):
-        """Test ObjectId transformation with invalid ID."""
-        
-        transformer = IdToObjectIdTransformer(["user_id"])
-        
-        # Test invalid ObjectId string
-        result = await transformer.transform(user_id="invalid_id")
-        
-        # Should not transform invalid IDs
-        assert result["user_id"] == "invalid_id"
-
-    @pytest.mark.asyncio
-    async def test_json_extractor_transformer(self):
-        """Test JSON extraction from strings."""
-        
-        transformer = JsonExtractorTransformer(["data"])
-        
-        # Test valid JSON string
-        json_string = '{"key": "value", "number": 42}'
-        result = await transformer.transform(data=json_string)
-        
-        assert isinstance(result["data"], dict)
-        assert result["data"]["key"] == "value"
-        assert result["data"]["number"] == 42
-
-    @pytest.mark.asyncio
-    async def test_json_extractor_transformer_invalid(self):
-        """Test JSON extraction with invalid JSON."""
-        
-        transformer = JsonExtractorTransformer(["data"])
-        
-        # Test invalid JSON string
-        result = await transformer.transform(data="not json")
-        
-        # Should not transform invalid JSON
-        assert result["data"] == "not json"
+    
 
 
 class TestToolResponse:

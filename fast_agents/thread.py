@@ -111,13 +111,13 @@ class Thread:
                 try:
                     parsed_args = json.loads(args)
                 except json.JSONDecodeError:
-                    return f"[Error] Invalid JSON: {args}"
+                    return ToolResponse(output=f"Invalid JSON: {args}", is_error=True)
 
                 # Create a new instance of the tool for each call
                 response = await tool.__class__().arun(**parsed_args, run_context=run_context)
                 return response
 
-        return f"[Error] No tool found with name {name}"
+        return ToolResponse(output=f"No tool found with name {name}", is_error=True)
 
     def verify_max_turns(self):
         if self.turn_count > self.max_turns:
@@ -150,7 +150,9 @@ class Thread:
             temperature=self.agent.temperature,
             truncation="auto",
             text=self.get_output_format(),
-            user=self.user_id
+            user=self.user_id,
+            store=False  # if using previous_response_id set True. Response objects are saved for 30 days by default. Opt out by setting to False.
+            # reasoning={"effort": "medium"}
         )
 
         if self.hooks:

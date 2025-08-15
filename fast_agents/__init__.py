@@ -9,8 +9,13 @@ and transformation, async/await support, and type-safe Pydantic models.
 from fast_agents.agent import Agent
 from fast_agents.tool import Tool
 from fast_agents.tool_response import ToolResponse
-from fast_agents.tool_transformer import ToolTransformer
-from fast_agents.tool_validator import ToolValidator
+from fast_agents.schema import Schema
+from fast_agents.pydantic_types import (
+    ObjectIdField,
+    DateField,
+    DateTimeField,
+    JSONField,
+)
 from fast_agents.thread import Thread
 from fast_agents.run_context import RunContext
 from fast_agents.llm_context import LlmContext
@@ -23,15 +28,10 @@ from fast_agents.exceptions import (
     InvalidPydanticSchemaResponseException,
 )
 
-# Tool transformers
-from fast_agents.tool_transformers.id_to_object_id_transformer import IdToObjectIdTransformer
-from fast_agents.tool_transformers.json_extractor_transformer import JsonExtractorTransformer
-from fast_agents.tool_transformers.string_to_date_transformer import StringToDateTransformer
-from fast_agents.tool_transformers.sort_transformer import SortTransformer
 
 __version__ = "0.1.0"
-__author__ = "Fast Agents"
-__email__ = "info@fast-agents.com"
+__author__ = "Patrik Mojzis"
+__email__ = "patrikm53@gmail.com"
 
 # Define what gets imported with "from fast_agents import *"
 __all__ = [
@@ -39,8 +39,7 @@ __all__ = [
     "Agent",
     "Tool", 
     "ToolResponse",
-    "ToolTransformer",
-    "ToolValidator",
+    "Schema",
     "Thread",
     "RunContext",
     "LlmContext",
@@ -53,11 +52,12 @@ __all__ = [
     "InvalidJSONResponseException",
     "InvalidPydanticSchemaResponseException",
     
-    # Tool transformers
-    "IdToObjectIdTransformer",
-    "JsonExtractorTransformer", 
-    "StringToDateTransformer",
-    "SortTransformer",
+    # (Transformers removed in favor of Schema + Pydantic types)
+    # Pydantic field types
+    "ObjectIdField",
+    "DateField",
+    "DateTimeField",
+    "JSONField",
     
     # Package metadata
     "__version__",
