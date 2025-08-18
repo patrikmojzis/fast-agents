@@ -55,7 +55,6 @@ agent = Agent(
 
 - `pydantic>=2.0.0` - Data validation and settings management
 - `openai>=1.0.0` - OpenAI API client
-- `bson>=0.5.10` - BSON ObjectId support  
 - `tiktoken>=0.4.0` - Token counting for OpenAI models
 
 ## License

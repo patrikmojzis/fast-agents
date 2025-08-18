@@ -9,13 +9,7 @@ and transformation, async/await support, and type-safe Pydantic models.
 from fast_agents.agent import Agent
 from fast_agents.tool import Tool
 from fast_agents.tool_response import ToolResponse
-from fast_agents.schema import Schema
-from fast_agents.pydantic_types import (
-    ObjectIdField,
-    DateField,
-    DateTimeField,
-    JSONField,
-)
+from fast_validation import Schema, ValidatorRule, ValidationRuleException
 from fast_agents.thread import Thread
 from fast_agents.run_context import RunContext
 from fast_agents.llm_context import LlmContext
@@ -40,24 +34,19 @@ __all__ = [
     "Tool", 
     "ToolResponse",
     "Schema",
+    "ValidatorRule",
+    "ValidationRuleException",
     "Thread",
     "RunContext",
     "LlmContext",
     "Hook",
-    
+
     # Exceptions
     "ToolValidationException",
     "MaxTurnsReachedException", 
     "RefusalException",
     "InvalidJSONResponseException",
     "InvalidPydanticSchemaResponseException",
-    
-    # (Transformers removed in favor of Schema + Pydantic types)
-    # Pydantic field types
-    "ObjectIdField",
-    "DateField",
-    "DateTimeField",
-    "JSONField",
     
     # Package metadata
     "__version__",

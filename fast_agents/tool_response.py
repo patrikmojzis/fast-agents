@@ -1,8 +1,6 @@
 import json
-from datetime import datetime
 from typing import Union
 
-from bson import ObjectId
 from openai.types.responses import ResponseInputParam
 from pydantic import field_validator, Field, BaseModel, ConfigDict
 
@@ -25,11 +23,4 @@ class ToolResponse(BaseModel):
             return f"[Error] {dump}"
 
         return dump
-
-    model_config = ConfigDict(
-        json_encoders={
-            datetime: lambda v: v.isoformat(),
-            ObjectId: lambda v: str(v)
-        },
-    )
 

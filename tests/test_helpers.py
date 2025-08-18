@@ -92,7 +92,6 @@ class TestHelpers:
             model_config = {"extra": "allow"}  # Allow extra fields
             
             def __init__(self, content: str):
-                super().__init__(name="test_context")
                 self.content = content
             
             async def dumps(self) -> str:
@@ -127,7 +126,7 @@ class TestHelpers:
         
         class MockLlmContext(LlmContext):
             def __init__(self):
-                super().__init__(name="test_context")
+                pass
                 
             async def dumps(self) -> str:
                 return "Single context"
@@ -139,3 +138,23 @@ class TestHelpers:
         result = await gather_contexts([context])
         
         assert result == "Single context"
+
+    def test_default_name_from_class(self):
+        class SomeCoolContext(LlmContext):
+            async def get_content(self) -> str:
+                return ""
+
+        s = SomeCoolContext()
+        assert s.name == "SomeCoolContext"
+
+    def test_property_override_takes_precedence(self):
+        class WithProperty(LlmContext):
+            @property
+            def name(self) -> str:
+                return "Prop Name"
+
+            async def get_content(self) -> str:
+                return ""
+
+        w = WithProperty()
+        assert w.name == "Prop Name"

@@ -27,7 +27,8 @@ dependencies = [
     "pydantic>=2.0.0",
     "openai>=1.99.9",
     "bson>=0.5.10",
-    "tiktoken>=0.4.0",
+    "tiktoken>=0.11.0",
+    "fast-validation @ git+https://github.com/patrikmojzis/fast-validation.git"
 ]
 
 [project.optional-dependencies]

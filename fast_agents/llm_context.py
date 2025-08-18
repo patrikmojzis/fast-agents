@@ -1,10 +1,16 @@
 from abc import abstractmethod, ABC
+from typing import ClassVar, Optional
 
-from pydantic import BaseModel, Field
 
+class LlmContext(ABC):
+    # Static metadata configured on subclasses; defaulted via __init_subclass__
+    name: ClassVar[Optional[str]] = None
 
-class LlmContext(ABC, BaseModel):
-    name: str = Field(...)
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        # Default name to class name if not provided or falsy
+        if not getattr(cls, "name", None):
+            cls.name = cls.__name__
 
     @abstractmethod
     async def get_content(self) -> str:

@@ -6,7 +6,6 @@ import pytest
 from pydantic import BaseModel
 
 from fast_agents import Tool, ToolResponse
-from bson import ObjectId
 
 
 class TestTool:
@@ -20,9 +19,9 @@ class TestTool:
             count: int = 1
         
         class TestTool(Tool):
+            """A tool for testing"""
             name = "test_tool"
-            description = "A tool for testing"
-            tool_schema = TestToolSchema
+            schema = TestToolSchema
             
             async def handle(self, **kwargs) -> ToolResponse:
                 return ToolResponse(output="test")
@@ -113,15 +112,3 @@ class TestToolResponse:
         assert "test" in output_str
         assert "[Error]" not in output_str
 
-    def test_tool_response_with_object_id(self):
-        """Test tool response with ObjectId serialization."""
-        
-        obj_id = ObjectId()
-        response = ToolResponse(output={"id": obj_id})
-        
-        # Check that the ObjectId is in the output dict
-        assert response.output["id"] == obj_id
-        
-        # The model_dump should handle ObjectId serialization via json_encoders
-        model_data = response.model_dump()
-        assert str(obj_id) in str(model_data)

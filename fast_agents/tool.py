@@ -1,26 +1,40 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar, Optional
 
 import pydantic
 from pydantic import BaseModel
 
-from fast_agents.exceptions import ValidationRuleException
+from fast_validation import ValidationRuleException, Schema
 from fast_agents.helpers.schema_helper import format_parameters
 from fast_agents.tool_response import ToolResponse
-from fast_agents.schema import Schema
 
 if TYPE_CHECKING:
     from fast_agents.run_context import RunContext
 
 class Tool(ABC):
-    name: str = None
-    description: str = None
-    
-    tool_schema: type[BaseModel] | type[Schema] = None   # Accept any Pydantic model class, including our Schema subclasses
+    # Static metadata configured on subclasses
+    name: ClassVar[Optional[str]] = None
+    description: ClassVar[Optional[str]] = None
+    schema: ClassVar[type[BaseModel] | type[Schema] | None] = None
 
-    partial: bool = False   # Whether to treat inputs as partial updates (exclude unset fields)
+    # Whether to treat inputs as partial updates (exclude unset fields)
+    partial: ClassVar[bool] = False
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        # Default sensible metadata
+        if not getattr(cls, "name", None):
+            cls.name = cls.__name__
+        # Derive description from docstring if not explicitly provided
+        if not getattr(cls, "description", None):
+            doc = cls.__doc__
+            if isinstance(doc, str):
+                first_line = doc.strip().splitlines()[0].strip() if doc.strip() else None
+                cls.description = first_line or None
+            else:
+                cls.description = None
 
     def __init__(self) -> None:
         self.run_context: 'RunContext' = None
@@ -31,7 +45,7 @@ class Tool(ABC):
             "type": "function",
             "name": self.name,
             "description": self.description,
-            "parameters": format_parameters(self.tool_schema)
+            "parameters": format_parameters(self.schema)
         }
 
     @abstractmethod
@@ -43,7 +57,7 @@ class Tool(ABC):
 
         # Parse
         try:
-            response = self.tool_schema(**kwargs)
+            response = self.schema(**kwargs)
             response_dict = response.model_dump(exclude_unset=self.partial)
         except pydantic.ValidationError as e:
             return ToolResponse(output=str(e), is_error=True)
