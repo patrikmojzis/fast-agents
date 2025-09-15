@@ -20,7 +20,6 @@ class TestThread:
             agent=sample_agent,
             input=[],
             max_turns=5,
-            model="gpt-4"
         )
 
     @pytest.mark.asyncio
@@ -30,14 +29,13 @@ class TestThread:
             agent=sample_agent,
             input=[],
             max_turns=10,
-            model="gpt-4",
             user_id="test_user"
         )
         
         assert thread.agent == sample_agent
         assert thread.input == []
         assert thread.max_turns == 10
-        assert thread.model == "gpt-4"
+        assert thread.agent.model == "gpt-4"
         assert thread.user_id == "test_user"
 
 @pytest.mark.asyncio
@@ -45,8 +43,8 @@ async def test_simple_thread_creation():
     """Test simple thread creation without complex setup."""
     from fast_agents import Agent, Thread
     
-    agent = Agent(name="simple", instructions="Simple test agent")
-    thread = Thread(agent=agent, input=[], max_turns=1, model="gpt-4")
+    agent = Agent(name="simple", instructions="Simple test agent", model="gpt-4")
+    thread = Thread(agent=agent, input=[], max_turns=1)
     
     assert thread.agent.name == "simple"
     assert thread.max_turns == 1

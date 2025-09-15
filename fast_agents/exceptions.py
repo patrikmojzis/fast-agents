@@ -21,3 +21,13 @@ class InvalidJSONResponseException(AgentException):
 class InvalidPydanticSchemaResponseException(AgentException):
     def __init__(self, message: str):
         super().__init__(message)
+
+
+class StreamingFailedException(AgentException):
+    def __init__(self, message: str = "Streaming failed"):
+        super().__init__(message)
+
+
+class ConfigurationException(ValueError):
+    def __init__(self, message: str):
+        super().__init__(message)

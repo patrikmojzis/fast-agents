@@ -27,12 +27,11 @@ class TestThreadWithMocking:
             agent=agent,
             input=[],
             max_turns=5,
-            model="gpt-4"
         )
         
         assert thread.agent == agent
         assert thread.max_turns == 5
-        assert thread.model == "gpt-4"
+        assert thread.agent.model == "gpt-4"
 
     @pytest.mark.asyncio
     async def test_thread_arun_with_mock(self):
@@ -48,7 +47,6 @@ class TestThreadWithMocking:
             agent=agent,
             input=[],
             max_turns=2,
-            model="gpt-4"
         )
         
         # Create mock response
@@ -73,21 +71,4 @@ class TestThreadWithMocking:
             
             # Verify the client was called
             mock_client.responses.create.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_thread_model_requirement(self):
-        """Test that thread requires a model."""
-        
-        agent = Agent(
-            name="test_agent",
-            instructions="You are a test assistant."
-            # No model specified
-        )
-        
-        with pytest.raises(ValueError, match="Please provide a model"):
-            Thread(
-                agent=agent,
-                input=[],
-                max_turns=5
-                # No model specified here either
-            )
+            

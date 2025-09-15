@@ -3,7 +3,7 @@ from typing import Any
 from openai.types.responses import ResponseInputItemParam
 
 
-def convert_to_dict(item: Any) -> dict:
+def response_to_dict(item: Any) -> dict:
     # Handle different input types more robustly
     if isinstance(item, dict):
         return item
@@ -17,7 +17,7 @@ def convert_to_dict(item: Any) -> dict:
         raise ValueError(f"Cannot convert item to dict: {item}")
 
 
-def convert_message(message: str) -> ResponseInputItemParam:
+def string_to_user_message(message: str) -> ResponseInputItemParam:
     return {
         "role": "user",
         "type": "message",

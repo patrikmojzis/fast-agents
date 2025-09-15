@@ -26,10 +26,13 @@ classifiers = [
 dependencies = [
     "pydantic>=2.0.0",
     "openai>=1.99.9",
-    "bson>=0.5.10",
     "tiktoken>=0.11.0",
-    "fast-validation @ git+https://github.com/patrikmojzis/fast-validation.git"
+    "fast-validation @ git+https://github.com/patrikmojzis/fast-validation.git",
+    "textual>=0.50.0"
 ]
+
+[project.scripts]
+fast-agents = "fast_agents.cli:main"
 
 [project.optional-dependencies]
 dev = [

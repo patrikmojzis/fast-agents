@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from fast_validation import ValidationRuleException, Schema
 from fast_agents.helpers.schema_helper import format_parameters
 from fast_agents.tool_response import ToolResponse
+from fast_agents.exceptions import ConfigurationException
 
 if TYPE_CHECKING:
     from fast_agents.run_context import RunContext
@@ -39,6 +40,15 @@ class Tool(ABC):
     def __init__(self) -> None:
         self.run_context: 'RunContext' = None
 
+        if not self.schema:
+            raise ConfigurationException("Tool schema is not defined. Define a Pydantic BaseModel in `schema`.\nExample:\n\nclass MyTool(Tool):\n    schema = MyToolSchema")
+        
+        if not self.name:
+            raise ConfigurationException("Tool name is not defined. Define a name in `name`.\nExample:\n\nclass MyTool(Tool):\n    name = 'my_tool'")
+        
+        if not self.description:
+            raise ConfigurationException("Tool description is not defined. Define a description in `description`.\nExample:\n\nclass MyTool(Tool):\n    description = 'My tool description'")
+        
     @property
     def tool_definition(self) -> dict:
         return {

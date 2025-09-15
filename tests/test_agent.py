@@ -23,7 +23,6 @@ class TestAgent:
         assert agent.instructions == "You are a helpful assistant."
         assert agent.tools == []
         assert agent.temperature is None
-        assert agent.model is None
 
     def test_agent_creation_with_all_params(self):
         """Test agent creation with all parameters."""

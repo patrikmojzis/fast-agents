@@ -12,9 +12,12 @@ This subpackage contains utility functions and helpers for:
 from fast_agents.helpers.schema_helper import format_parameters
 from fast_agents.helpers.tokenisor import num_tokens_from_string
 from fast_agents.helpers.llm_context_helper import gather_contexts
+from fast_agents.helpers.function_helper import response_to_dict, string_to_user_message
 
 __all__ = [
     "format_parameters",
     "num_tokens_from_string", 
     "gather_contexts",
+    "response_to_dict",
+    "string_to_user_message",
 ]
