@@ -10,6 +10,7 @@ from pydantic import ValidationError
 
 from fast_agents.exceptions import MaxTurnsReachedException, RefusalException, InvalidJSONResponseException, \
     InvalidPydanticSchemaResponseException, StreamingFailedException
+from fast_agents.helpers.input_filters import filter_status
 from fast_agents.helpers.llm_context_helper import gather_contexts
 from fast_agents.helpers.schema_helper import format_parameters
 from fast_agents.helpers.tokenisor import num_tokens_from_string
@@ -112,7 +113,7 @@ class Thread:
         if contexts:
             selected_inputs.insert(0, {"role": "system", "content": contexts})
 
-        return selected_inputs
+        return filter_status(selected_inputs)
 
     def get_output_format(self) -> ResponseTextConfigParam:
         if output_type := self.agent.output_type:

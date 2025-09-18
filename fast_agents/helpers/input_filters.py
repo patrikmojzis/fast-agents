@@ -5,6 +5,17 @@ from openai.types.responses.response_input_param import Message
 
 from fast_agents.helpers.function_helper import response_to_dict
 
+def filter_status(input: ResponseInputParam) -> ResponseInputParam:
+    """
+    Remove any 'status' fields from input items as the Responses API does not accept them on input.
+    """
+    sanitized: ResponseInputParam = []
+    for item in input:
+        item_dict = response_to_dict(item)
+        item_dict.pop("status", None)
+        sanitized.append(item_dict)
+
+    return sanitized
 
 def filter_input(input: ResponseInputParam, filters: list[Callable[[ResponseInputParam], ResponseInputParam]]) -> ResponseInputParam:
     for filter in filters:
@@ -52,3 +63,13 @@ def filter_function_calls(input: ResponseInputParam) -> ResponseInputParam:
             
     return filtered_input
             
+
+def filter_reasoning(input: ResponseInputParam) -> ResponseInputParam:
+    filtered_input: ResponseInputParam = []
+    
+    for item in input:
+        item = response_to_dict(item)
+        if item.get("type") != "reasoning":
+            filtered_input.append(item)
+            
+    return filtered_input
