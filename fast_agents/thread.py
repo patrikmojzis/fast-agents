@@ -34,8 +34,9 @@ class Thread:
                  llm_contexts: Optional[list['LlmContext']] = None,
                  hooks: Optional[list['Hook']] = None,
                  max_input_tokens: Optional[int] = None,
-                 user_id: Optional[str] = None,
-                 run_pipelines: Optional[list[RunPipeline]] = None
+                 prompt_cache_key: Optional[str] = None,
+                 run_pipelines: Optional[list[RunPipeline]] = None,
+                 openai_store_responses: Optional[bool] = True   # If True response objects are saved for 30 days. Opt out by setting to False. If using previous_response_id set True
                  ):
         self.agent = agent
         self.max_turns = max_turns
@@ -45,9 +46,10 @@ class Thread:
         self.hooks = hooks
         self.turn_count = 0 
         self.max_input_tokens = max_input_tokens
-        self.user_id = user_id
+        self.prompt_cache_key = prompt_cache_key
         self.run_pipelines = run_pipelines
         self.client = None
+        self.openai_store_responses = openai_store_responses
         
     def create_run_context(self, run_input: list[ResponseInputParam]) -> 'RunContext':
         return RunContext(
@@ -187,8 +189,8 @@ class Thread:
             temperature=self.agent.temperature,
             truncation="auto",
             text=self.get_output_format(),
-            user=self.user_id,
-            store=False,  # if using previous_response_id set True. Response objects are saved for 30 days by default. Opt out by setting to False.
+            prompt_cache_key=self.prompt_cache_key,
+            store=self.openai_store_responses, 
             reasoning=Reasoning(effort=self.agent.reasoning_effort) if getattr(self.agent, 'reasoning_effort', None) else None,
         )
 
@@ -238,7 +240,7 @@ class Thread:
             temperature=self.agent.temperature,
             truncation="auto",
             text=self.get_output_format(),
-            user=self.user_id,
+            prompt_cache_key=self.prompt_cache_key,
             store=False,
             reasoning=Reasoning(effort=self.agent.reasoning_effort) if getattr(self.agent, 'reasoning_effort', None) else None,
         ) as s:
