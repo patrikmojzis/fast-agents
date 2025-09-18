@@ -9,13 +9,21 @@ def filter_status(input: ResponseInputParam) -> ResponseInputParam:
     """
     Remove any 'status' fields from input items as the Responses API does not accept them on input.
     """
-    sanitized: ResponseInputParam = []
+    filtered_input: ResponseInputParam = []
     for item in input:
         item_dict = response_to_dict(item)
         item_dict.pop("status", None)
-        sanitized.append(item_dict)
+        filtered_input.append(item_dict)
 
-    return sanitized
+    return filtered_input
+
+def filter_ids(input: ResponseInputParam) -> ResponseInputParam:
+    filtered_input: ResponseInputParam = []
+    for item in input:
+        item_dict = response_to_dict(item)
+        item_dict.pop("id", None)
+        filtered_input.append(item_dict)
+    return filtered_input
 
 def filter_input(input: ResponseInputParam, filters: list[Callable[[ResponseInputParam], ResponseInputParam]]) -> ResponseInputParam:
     for filter in filters:
