@@ -4,12 +4,13 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, ClassVar, Optional
 
 import pydantic
+from fast_validation import ValidationRuleException, Schema
 from pydantic import BaseModel
 
-from fast_validation import ValidationRuleException, Schema
+from fast_agents.exceptions import ConfigurationException, ToolException
 from fast_agents.helpers.schema_helper import format_parameters
+from fast_agents.helpers.text_helper import pascal_case_to_snake_case
 from fast_agents.tool_response import ToolResponse
-from fast_agents.exceptions import ConfigurationException
 
 if TYPE_CHECKING:
     from fast_agents.run_context import RunContext
@@ -27,7 +28,7 @@ class Tool(ABC):
         super().__init_subclass__(**kwargs)
         # Default sensible metadata
         if not getattr(cls, "name", None):
-            cls.name = cls.__name__
+            cls.name = pascal_case_to_snake_case(cls.__name__).rstrip("_tool")
         # Derive description from docstring if not explicitly provided
         if not getattr(cls, "description", None):
             doc = cls.__doc__
@@ -59,7 +60,7 @@ class Tool(ABC):
         }
 
     @abstractmethod
-    async def handle(self, **kwargs) -> ToolResponse:
+    async def handle(self, **kwargs) -> ToolResponse | dict | str | int | list:
         raise NotImplementedError
 
     async def arun(self, run_context: 'RunContext', **kwargs) -> ToolResponse:
@@ -70,14 +71,21 @@ class Tool(ABC):
             response = self.schema(**kwargs)
             response_dict = response.model_dump(exclude_unset=self.partial)
         except pydantic.ValidationError as e:
-            return ToolResponse(output=str(e), is_error=True)
+            return ToolResponse(is_error=True, output=str(e))
 
         # Schema rule validation (optional)
         if isinstance(response, Schema):
             try:
                 await response.validate(partial=self.partial)
             except ValidationRuleException as e:
-                return ToolResponse(output=str(e), is_error=True)
+                return ToolResponse(is_error=True, output=e.errors)
 
         # Execute
-        return await self.handle(**response_dict)
+        try:
+            res = await self.handle(**response_dict)
+            if isinstance(res, ToolResponse):
+                return res
+
+            return ToolResponse(output=res)
+        except ToolException as e:
+            return ToolResponse(is_error=True, output=str(e))

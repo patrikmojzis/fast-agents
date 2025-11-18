@@ -1,26 +1,26 @@
 class ToolValidationException(Exception):
-    def __init__(self, message: str):
-        super().__init__(message)
+    pass
+
 
 class AgentException(Exception):
-    def __init__(self, message: str):
-        super().__init__(message)
+    pass
+
 
 class MaxTurnsReachedException(AgentException):
     def __init__(self):
         super().__init__("Max turns reached")
 
+
 class RefusalException(AgentException):
-    def __init__(self, message: str):
-        super().__init__(message)
+    pass
+
 
 class InvalidJSONResponseException(AgentException):
-    def __init__(self, message: str):
-        super().__init__(message)
+    pass
+
 
 class InvalidPydanticSchemaResponseException(AgentException):
-    def __init__(self, message: str):
-        super().__init__(message)
+    pass
 
 
 class StreamingFailedException(AgentException):
@@ -29,5 +29,13 @@ class StreamingFailedException(AgentException):
 
 
 class ConfigurationException(ValueError):
-    def __init__(self, message: str):
-        super().__init__(message)
+    pass
+
+
+class ToolException(Exception):
+    """
+    Raise this exception inside a Tool to propagate to Agent an error.
+    This exception does not cause crashes. It is caught in subsequent steps
+    and its message is passed to agent.
+    """
+    pass
